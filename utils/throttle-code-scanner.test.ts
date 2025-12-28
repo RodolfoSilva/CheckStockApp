@@ -17,7 +17,7 @@ describe("throttleCodeScanner", () => {
   });
 
   describe("disparo após leituras consecutivas", () => {
-    it("deve disparar listener após 3 leituras consecutivas do mesmo código", () => {
+    it("deve disparar listener após minReadings leituras consecutivas do mesmo código", () => {
       const scanner = throttleCodeScanner(3, 3000);
       const listener = jest.fn();
       scanner.addListener(listener);
@@ -49,7 +49,7 @@ describe("throttleCodeScanner", () => {
       expect(listener).toHaveBeenCalledTimes(1);
     });
 
-    it("deve permitir múltiplas validações do mesmo código", () => {
+    it("não deve disparar novamente se o mesmo código for lido dentro do TTL", () => {
       const scanner = throttleCodeScanner(3, 3000);
       const listener = jest.fn();
       scanner.addListener(listener);
@@ -61,6 +61,26 @@ describe("throttleCodeScanner", () => {
       scanner.process(code);
       expect(listener).toHaveBeenCalledTimes(1);
 
+      jest.advanceTimersByTime(1000);
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    it("deve permitir múltiplas validações do mesmo código após o TTL", () => {
+      const scanner = throttleCodeScanner(3, 3000);
+      const listener = jest.fn();
+      scanner.addListener(listener);
+
+      const code = createCode("123456");
+
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(3000);
       scanner.process(code);
       scanner.process(code);
       scanner.process(code);
@@ -106,63 +126,6 @@ describe("throttleCodeScanner", () => {
     });
   });
 
-  describe("fallback após timeout", () => {
-    it("deve disparar listener após timeout se condição não foi atingida", () => {
-      const scanner = throttleCodeScanner(3, 1000);
-      const listener = jest.fn();
-      scanner.addListener(listener);
-
-      const code = createCode("123456");
-
-      scanner.process(code);
-      scanner.process(code);
-
-      expect(listener).not.toHaveBeenCalled();
-
-      jest.advanceTimersByTime(1000);
-
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(listener).toHaveBeenCalledWith(code);
-    });
-
-    it("não deve disparar fallback se condição já foi atingida", () => {
-      const scanner = throttleCodeScanner(3, 1000);
-      const listener = jest.fn();
-      scanner.addListener(listener);
-
-      const code = createCode("123456");
-
-      scanner.process(code);
-      scanner.process(code);
-      scanner.process(code);
-
-      expect(listener).toHaveBeenCalledTimes(1);
-
-      jest.advanceTimersByTime(1000);
-
-      expect(listener).toHaveBeenCalledTimes(1);
-    });
-
-    it("deve resetar timer quando nova leitura é feita", () => {
-      const scanner = throttleCodeScanner(3, 1000);
-      const listener = jest.fn();
-      scanner.addListener(listener);
-
-      const code = createCode("123456");
-
-      scanner.process(code);
-      jest.advanceTimersByTime(500);
-
-      scanner.process(code);
-      jest.advanceTimersByTime(500);
-
-      expect(listener).not.toHaveBeenCalled();
-
-      jest.advanceTimersByTime(500);
-
-      expect(listener).toHaveBeenCalledTimes(1);
-    });
-  });
 
   describe("múltiplos listeners", () => {
     it("deve disparar todos os listeners quando condição é atingida", () => {
@@ -186,24 +149,6 @@ describe("throttleCodeScanner", () => {
       expect(listener3).toHaveBeenCalledTimes(1);
     });
 
-    it("deve disparar todos os listeners no fallback", () => {
-      const scanner = throttleCodeScanner(3, 1000);
-      const listener1 = jest.fn();
-      const listener2 = jest.fn();
-
-      scanner.addListener(listener1);
-      scanner.addListener(listener2);
-
-      const code = createCode("123456");
-
-      scanner.process(code);
-      scanner.process(code);
-
-      jest.advanceTimersByTime(1000);
-
-      expect(listener1).toHaveBeenCalledTimes(1);
-      expect(listener2).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe("remoção de listeners", () => {
@@ -340,7 +285,7 @@ describe("throttleCodeScanner", () => {
       expect(listener).toHaveBeenCalledTimes(1);
     });
 
-    it("deve respeitar fallbackTimeout customizado", () => {
+    it("deve respeitar TTL customizado", () => {
       const scanner = throttleCodeScanner(3, 2000);
       const listener = jest.fn();
 
@@ -350,18 +295,26 @@ describe("throttleCodeScanner", () => {
 
       scanner.process(code);
       scanner.process(code);
-
-      jest.advanceTimersByTime(1000);
-      expect(listener).not.toHaveBeenCalled();
-
-      jest.advanceTimersByTime(1000);
+      scanner.process(code);
       expect(listener).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(1000);
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(1000);
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(2);
     });
   });
 
   describe("cenários complexos", () => {
-    it("deve lidar com sequência de códigos diferentes e timeouts", () => {
-      const scanner = throttleCodeScanner(3, 1000);
+    it("deve lidar com sequência de códigos diferentes", () => {
+      const scanner = throttleCodeScanner(3, 3000);
       const listener = jest.fn();
 
       scanner.addListener(listener);
@@ -372,7 +325,7 @@ describe("throttleCodeScanner", () => {
 
       scanner.process(code1);
       scanner.process(code1);
-      jest.advanceTimersByTime(1000);
+      scanner.process(code1);
       expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toHaveBeenLastCalledWith(code1);
 
@@ -384,13 +337,13 @@ describe("throttleCodeScanner", () => {
 
       scanner.process(code3);
       scanner.process(code3);
-      jest.advanceTimersByTime(1000);
+      scanner.process(code3);
       expect(listener).toHaveBeenCalledTimes(3);
       expect(listener).toHaveBeenLastCalledWith(code3);
     });
 
     it("deve resetar estado corretamente após múltiplas validações", () => {
-      const scanner = throttleCodeScanner(2, 1000);
+      const scanner = throttleCodeScanner(2, 3000);
       const listener = jest.fn();
 
       scanner.addListener(listener);
@@ -403,6 +356,11 @@ describe("throttleCodeScanner", () => {
 
       scanner.process(code);
       scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(3000);
+      scanner.process(code);
+      scanner.process(code);
       expect(listener).toHaveBeenCalledTimes(2);
 
       const newCode = createCode("789012");
@@ -410,6 +368,53 @@ describe("throttleCodeScanner", () => {
       scanner.process(newCode);
       expect(listener).toHaveBeenCalledTimes(3);
       expect(listener).toHaveBeenLastCalledWith(newCode);
+    });
+
+    it("deve respeitar TTL para evitar notificações repetidas do mesmo código", () => {
+      const scanner = throttleCodeScanner(3, 2000);
+      const listener = jest.fn();
+
+      scanner.addListener(listener);
+
+      const code = createCode("123456");
+
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(2000);
+      scanner.process(code);
+      scanner.process(code);
+      scanner.process(code);
+      expect(listener).toHaveBeenCalledTimes(2);
+    });
+
+    it("deve permitir notificar códigos diferentes mesmo dentro do TTL", () => {
+      const scanner = throttleCodeScanner(3, 3000);
+      const listener = jest.fn();
+
+      scanner.addListener(listener);
+
+      const code1 = createCode("111");
+      const code2 = createCode("222");
+
+      scanner.process(code1);
+      scanner.process(code1);
+      scanner.process(code1);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenLastCalledWith(code1);
+
+      scanner.process(code2);
+      scanner.process(code2);
+      scanner.process(code2);
+      expect(listener).toHaveBeenCalledTimes(2);
+      expect(listener).toHaveBeenLastCalledWith(code2);
     });
   });
 });
