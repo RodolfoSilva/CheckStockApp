@@ -2,10 +2,10 @@ import { FlatList, Text, View } from "react-native";
 
 import { NoCameraDeviceError } from "@/components/no-camera-device";
 import { PermissionsPage } from "@/components/permissions-page";
+import useBeep from "@/hooks/use-beep";
 import { throttleCodeScanner } from "@/utils/throttle-code-scanner";
-import { useAudioPlayer } from "expo-audio";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Camera,
@@ -14,28 +14,21 @@ import {
   useCodeScanner,
 } from "react-native-vision-camera";
 
-const audioSource = require("../../assets/beep.mp3");
-
 const itemScanner = throttleCodeScanner(3, 3000);
 
 export default function ItemScreen() {
   const { location } = useLocalSearchParams();
   const device = useCameraDevice("back");
   const { hasPermission } = useCameraPermission();
-  const player = useAudioPlayer(audioSource);
   const [codes, setCodes] = useState<string[]>([]);
 
-  const playBeep = useCallback(() => {
-    player.seekTo(0);
-    player.play();
-  }, [player]);
-
+  const beep = useBeep();
   useEffect(() => {
     return itemScanner.addListener(async (code) => {
       const codeValue = code.value;
       if (!codeValue) return;
-      playBeep();
-      console.log("code", code);
+      beep();
+      console.log("Reading", code.type, code.value);
 
       setCodes((prev) =>
         [codeValue, ...prev]
@@ -60,7 +53,7 @@ export default function ItemScreen() {
         console.error(error);
       }
     });
-  }, [location, playBeep]);
+  }, [location, beep]);
 
   const codeScanner = useCodeScanner({
     codeTypes: ["code-128", "upc-a", "ean-13", "qr"],
