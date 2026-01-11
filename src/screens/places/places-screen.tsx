@@ -79,6 +79,7 @@ export default function PlacesScreen() {
           </View>
         ) : (
           <FlashList
+            style={styles.list}
             data={filteredPlaces}
             renderItem={({ item }) => (
               <PlaceCard
@@ -102,6 +103,9 @@ const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  list: {
+    flex: 1,
   },
   listContainer: {
     paddingHorizontal: theme.spacing.md,

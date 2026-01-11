@@ -32,6 +32,7 @@ export default function ConferencesScreen() {
   return (
     <View style={styles.container}>
       <FlashList
+        style={styles.list}
         data={conferences}
         renderItem={({ item }) => <ConferenceCard conference={item} />}
         keyExtractor={(item) => item.id}
@@ -45,6 +46,9 @@ const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  list: {
+    flex: 1,
   },
   listContent: {
     paddingVertical: theme.spacing.sm,

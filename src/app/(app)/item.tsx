@@ -1,12 +1,13 @@
-import { FlatList, Text, View } from "react-native";
-
 import { NoCameraDeviceError } from "@/components/no-camera-device";
 import { PermissionsPage } from "@/components/permissions-page";
 import useBeep from "@/hooks/use-beep";
 import { throttleCodeScanner } from "@/utils/throttle-code-scanner";
+import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native-unistyles";
 import {
   Camera,
   useCameraDevice,
@@ -74,11 +75,18 @@ export default function ItemScreen() {
         codeScanner={codeScanner}
         isActive={true}
       />
-      <FlatList
-        style={{ flex: 1 }}
+      <FlashList
+        style={styles.list}
         data={codes}
         renderItem={({ item }) => <Text>ITEM: {item}</Text>}
+        keyExtractor={(item, index) => `${item}-${index}`}
       />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  list: {
+    flex: 1,
+  },
+}));
