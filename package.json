@@ -1,6 +1,6 @@
 {
   "name": "shellpify",
-  "main": "expo-router/entry",
+  "main": "src/index.ts",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -63,7 +63,10 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/*.test.ts", "**/*.test.tsx"],
+    "testMatch": [
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
     }
