@@ -1,10 +1,14 @@
 import { placesQuery } from "@/api/places";
+import PressButton from "@/components/press-button";
 import SearchBar from "@/components/search-bar";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
+import { Stack } from "expo-router";
 import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import NewPlaceForm from "./components/new-place-form";
 import PlaceCard from "./components/place-card";
 
 export default function PlacesScreen() {
@@ -34,28 +38,49 @@ export default function PlacesScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search by name, SKU, or barcode..."
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <PressButton
+              style={styles.actionButton}
+              onPress={async () => await TrueSheet.present("new-place-sheet")}
+            >
+              <Text style={styles.actionText}>Novo</Text>
+            </PressButton>
+          ),
+        }}
       />
 
-      {filteredPlaces.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            {searchQuery ? "No places found" : "No places available"}
-          </Text>
-        </View>
-      ) : (
-        <FlashList
-          data={filteredPlaces}
-          renderItem={({ item }) => <PlaceCard place={item} />}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
+      <TrueSheet name="new-place-sheet" detents={[0.5]} dismissible>
+        <NewPlaceForm
+          onSuccess={async () => TrueSheet.dismiss("new-place-sheet")}
         />
-      )}
-    </View>
+      </TrueSheet>
+
+      <View style={styles.container}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by name, SKU, or barcode..."
+        />
+
+        {filteredPlaces.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              {searchQuery ? "No places found" : "No places available"}
+            </Text>
+          </View>
+        ) : (
+          <FlashList
+            data={filteredPlaces}
+            renderItem={({ item }) => <PlaceCard place={item} />}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+          />
+        )}
+      </View>
+    </>
   );
 }
 
@@ -87,5 +112,13 @@ const styles = StyleSheet.create((theme) => ({
   loadingText: {
     fontSize: 16,
     color: theme.colors.textSecondary,
+  },
+  actionButton: {
+    marginRight: theme.spacing.sm,
+  },
+  actionText: {
+    fontSize: 16,
+    color: theme.colors.iconForeground,
+    fontWeight: "600",
   },
 }));
