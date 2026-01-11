@@ -96,6 +96,9 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - **TrueSheet View ROOT restriction**: The root `View` component inside `<TrueSheet />` must NEVER use `flex: 1` - this does not work in form sheets and will cause layout issues
   - ❌ Bad: `<View style={{ flex: 1 }}>...</View>` inside `<TrueSheet>`
   - ✅ Good: `<View style={{ padding: 16 }}>...</View>` inside `<TrueSheet>`
+- **TrueSheet onDidDismiss restriction**: NEVER use `onDidDismiss` to call `await TrueSheet.dismiss()` - `onDidDismiss` is called AFTER the sheet is already dismissed, so calling `dismiss()` inside it is redundant and can cause issues
+  - ❌ Bad: `<TrueSheet onDidDismiss={async () => await TrueSheet.dismiss("sheet-name")} />`
+  - ✅ Good: Call `TrueSheet.dismiss()` directly from form submission handlers or other callbacks, not from `onDidDismiss`
 
 ## Code Organization
 - Components go in `components/` directory
