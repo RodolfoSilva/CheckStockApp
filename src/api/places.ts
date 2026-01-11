@@ -5,7 +5,6 @@ import { queryOptions, useMutation } from "@tanstack/react-query";
 
 export async function getPlaces() {
   const places = await database.get<Place>("places").query().fetch();
-  console.log("getPlaces", places);
   return places;
 }
 
