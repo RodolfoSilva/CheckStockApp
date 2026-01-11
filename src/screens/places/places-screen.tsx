@@ -52,7 +52,7 @@ export default function PlacesScreen() {
         }}
       />
 
-      <TrueSheet name="new-place-sheet" detents={[0.5]} dismissible>
+      <TrueSheet name="new-place-sheet" detents={["auto"]} dismissible>
         <NewPlaceForm
           onSuccess={async () => TrueSheet.dismiss("new-place-sheet")}
         />

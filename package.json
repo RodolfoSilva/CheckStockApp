@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@hookform/resolvers": "^5.2.2",
     "@lodev09/react-native-true-sheet": "^3.7.2",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-navigation/bottom-tabs": "^7.4.0",

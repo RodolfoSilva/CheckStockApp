@@ -1,6 +1,7 @@
 import { useCreatePlace } from "@/api/places";
 import Button from "@/components/button";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { z } from "zod";
@@ -10,39 +11,33 @@ const placeSchema = z.object({
   code: z.string().min(1, "Código é obrigatório"),
 });
 
+type PlaceFormData = z.infer<typeof placeSchema>;
+
 type Props = {
   onSuccess: () => void;
 };
 
 export default function NewPlaceForm(props: Props) {
   const { onSuccess } = props;
-  const [name, setName] = useState("");
-  const [code, setCode] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; code?: string }>({});
   const { theme } = useUnistyles();
 
   const createPlaceMutation = useCreatePlace();
 
-  const handleSubmit = async () => {
-    setErrors({});
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PlaceFormData>({
+    resolver: zodResolver(placeSchema),
+    defaultValues: {
+      name: "",
+      code: "",
+    },
+  });
 
-    const result = placeSchema.safeParse({ name, code });
-
-    if (!result.success) {
-      const fieldErrors: { name?: string; code?: string } = {};
-      result.error.issues.forEach((issue) => {
-        if (issue.path[0] === "name") {
-          fieldErrors.name = issue.message;
-        } else if (issue.path[0] === "code") {
-          fieldErrors.code = issue.message;
-        }
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
+  const onSubmit = async (data: PlaceFormData) => {
     try {
-      await createPlaceMutation.mutateAsync({ name, code });
+      await createPlaceMutation.mutateAsync(data);
       onSuccess();
     } catch (error) {
       console.error("Error creating place:", error);
@@ -58,41 +53,53 @@ export default function NewPlaceForm(props: Props) {
       <View style={styles.form}>
         <View style={styles.field}>
           <Text style={styles.label}>Nome</Text>
-          <TextInput
-            style={[styles.input, errors.name && styles.inputError]}
-            placeholder="Digite o nome do local"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={name}
-            onChangeText={(text) => {
-              setName(text);
-              if (errors.name) {
-                setErrors((prev) => ({ ...prev, name: undefined }));
-              }
-            }}
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <>
+                <TextInput
+                  style={[styles.input, errors.name && styles.inputError]}
+                  placeholder="Digite o nome do local"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                />
+                {errors.name && (
+                  <Text style={styles.errorText}>{errors.name.message}</Text>
+                )}
+              </>
+            )}
           />
-          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
         </View>
 
         <View style={styles.field}>
           <Text style={styles.label}>Código</Text>
-          <TextInput
-            style={[styles.input, errors.code && styles.inputError]}
-            placeholder="Digite o código do local"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={code}
-            onChangeText={(text) => {
-              setCode(text);
-              if (errors.code) {
-                setErrors((prev) => ({ ...prev, code: undefined }));
-              }
-            }}
+          <Controller
+            control={control}
+            name="code"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <>
+                <TextInput
+                  style={[styles.input, errors.code && styles.inputError]}
+                  placeholder="Digite o código do local"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                />
+                {errors.code && (
+                  <Text style={styles.errorText}>{errors.code.message}</Text>
+                )}
+              </>
+            )}
           />
-          {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
         </View>
 
         <Button
           title="Salvar"
-          onPress={handleSubmit}
+          onPress={handleSubmit(onSubmit)}
           disabled={createPlaceMutation.isPending}
         />
       </View>
@@ -102,11 +109,10 @@ export default function NewPlaceForm(props: Props) {
 
 const styles = StyleSheet.create((theme) => ({
   container: {
-    backgroundColor: theme.colors.background,
-    padding: theme.spacing.lg,
+    padding: theme.spacing.md,
   },
   header: {
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   title: {
     fontSize: 24,
@@ -114,7 +120,7 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.text,
   },
   form: {
-    gap: theme.spacing.lg,
+    gap: theme.spacing.md,
   },
   field: {
     gap: theme.spacing.sm,
