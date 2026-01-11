@@ -1,15 +1,16 @@
 import Asset from "@/db/models/asset";
 import Feather from "@expo/vector-icons/Feather";
 import { useMemo } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 type Props = {
   asset: Asset;
+  onPress?: () => void;
 };
 
 export default function AssetCard(props: Props) {
-  const { asset } = props;
+  const { asset, onPress } = props;
   const { theme } = useUnistyles();
 
   // Generate a mock stock number based on asset ID for display
@@ -22,7 +23,13 @@ export default function AssetCard(props: Props) {
   }, [asset.id]);
 
   return (
-    <View style={styles.assetCard}>
+    <Pressable
+      style={({ pressed }) => [
+        styles.assetCard,
+        pressed && styles.assetCardPressed,
+      ]}
+      onPress={onPress}
+    >
       <View style={styles.assetIconContainer}>
         <Feather name="box" size={24} color={theme.colors.iconForeground} />
       </View>
@@ -39,7 +46,7 @@ export default function AssetCard(props: Props) {
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -52,6 +59,9 @@ const styles = StyleSheet.create((theme) => ({
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
     gap: theme.spacing.md,
+  },
+  assetCardPressed: {
+    opacity: 0.7,
   },
   assetIconContainer: {
     width: 56,

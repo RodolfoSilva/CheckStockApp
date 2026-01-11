@@ -1,27 +1,30 @@
 import { assetsQuery } from "@/api/assets";
+import PressButton from "@/components/press-button";
+import SearchBar from "@/components/search-bar";
+import Asset from "@/db/models/asset";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { Stack } from "expo-router";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import SearchBar from "@/components/search-bar";
 import AssetCard from "./components/asset-card";
+import NewAssetForm from "./components/new-asset-form";
 
 export default function AssetsScreen() {
-  const { data: assets, isLoading } = useQuery(assetsQuery);
+  const { data: assets = [], isLoading } = useQuery(assetsQuery);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingAsset, setEditingAsset] = useState<Asset | undefined>(
+    undefined
+  );
 
-  const filteredAssets = useMemo(() => {
-    if (!assets) return [];
-    if (!searchQuery.trim()) return assets;
-
-    const query = searchQuery.toLowerCase().trim();
-    return assets.filter(
-      (asset) =>
-        asset.name.toLowerCase().includes(query) ||
-        asset.code.toLowerCase().includes(query)
-    );
-  }, [assets, searchQuery]);
+  const query = searchQuery.toLowerCase().trim();
+  const filteredAssets = assets.filter(
+    (asset) =>
+      asset.name.toLowerCase().includes(query) ||
+      asset.code.toLowerCase().includes(query)
+  );
 
   if (isLoading) {
     return (
@@ -33,35 +36,65 @@ export default function AssetsScreen() {
     );
   }
 
-  if (!assets || assets.length === 0) {
-    return (
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <PressButton
+              style={styles.actionButton}
+              onPress={async () => {
+                setEditingAsset(undefined);
+                await TrueSheet.present("new-asset-sheet");
+              }}
+            >
+              <Text style={styles.actionText}>Novo</Text>
+            </PressButton>
+          ),
+        }}
+      />
+
+      <TrueSheet name="new-asset-sheet" detents={["auto"]} dismissible>
+        <NewAssetForm
+          asset={editingAsset}
+          onSuccess={async () => {
+            setEditingAsset(undefined);
+            await TrueSheet.dismiss("new-asset-sheet");
+          }}
+        />
+      </TrueSheet>
+
       <View style={styles.container}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search by name, SKU, or barcode..."
         />
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No assets found</Text>
-        </View>
-      </View>
-    );
-  }
 
-  return (
-    <View style={styles.container}>
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search by name, SKU, or barcode..."
-      />
-      <FlashList
-        data={filteredAssets}
-        renderItem={({ item }) => <AssetCard asset={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-      />
-    </View>
+        {filteredAssets.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              {searchQuery ? "No assets found" : "No assets available"}
+            </Text>
+          </View>
+        ) : (
+          <FlashList
+            data={filteredAssets}
+            renderItem={({ item }) => (
+              <AssetCard
+                asset={item}
+                onPress={async () => {
+                  setEditingAsset(item);
+                  await TrueSheet.present("new-asset-sheet");
+                }}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+          />
+        )}
+      </View>
+    </>
   );
 }
 
@@ -70,7 +103,7 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  listContent: {
+  listContainer: {
     paddingHorizontal: theme.spacing.md,
     paddingBottom: theme.spacing.lg,
   },
@@ -78,20 +111,28 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: theme.spacing.xl,
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: theme.colors.text,
+    color: theme.colors.textSecondary,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: theme.spacing.xl,
   },
   loadingText: {
     fontSize: 16,
+    color: theme.colors.textSecondary,
+  },
+  actionButton: {
+    marginRight: theme.spacing.sm,
+  },
+  actionText: {
+    fontSize: 16,
+    color: theme.colors.iconForeground,
     fontWeight: "600",
-    color: theme.colors.text,
   },
 }));
