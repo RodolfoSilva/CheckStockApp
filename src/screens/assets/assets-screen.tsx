@@ -3,7 +3,6 @@ import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import SearchBar from "@/components/search-bar";
 import AssetCard from "./components/asset-card";
@@ -26,17 +25,17 @@ export default function AssetsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView edges={["top"]} style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!assets || assets.length === 0) {
     return (
-      <SafeAreaView edges={["top"]} style={styles.container}>
+      <View style={styles.container}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -45,12 +44,12 @@ export default function AssetsScreen() {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No assets found</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView edges={["top"]} style={styles.container}>
+    <View style={styles.container}>
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -62,7 +61,7 @@ export default function AssetsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

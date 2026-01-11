@@ -1,11 +1,10 @@
 import { placesQuery } from "@/api/places";
+import SearchBar from "@/components/search-bar";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import SearchBar from "@/components/search-bar";
 import PlaceCard from "./components/place-card";
 
 export default function PlacesScreen() {
@@ -26,16 +25,16 @@ export default function PlacesScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <View style={styles.container}>
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -56,7 +55,7 @@ export default function PlacesScreen() {
           contentContainerStyle={styles.listContainer}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
