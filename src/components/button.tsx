@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
@@ -11,19 +11,18 @@ type Props = {
 export default function Button(props: Props) {
   const { onPress, title, disabled = false, variant = "primary" } = props;
 
+  // Use TouchableOpacity instead of Pressable on Android to avoid double-tap issues
+  // when used inside TrueSheet. TouchableOpacity has better touch event handling
+  // in modal/sheet contexts on Android.
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.button,
-        styles[variant],
-        disabled && styles.disabled,
-        pressed && styles.pressed,
-      ]}
+    <TouchableOpacity
+      style={[styles.button, styles[variant], disabled && styles.disabled]}
       onPress={onPress}
       disabled={disabled}
+      activeOpacity={0.8}
     >
       <Text style={[styles.text, styles[`${variant}Text`]]}>{title}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -44,9 +43,6 @@ const styles = StyleSheet.create((theme) => ({
   },
   disabled: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.8,
   },
   text: {
     fontSize: 16,
