@@ -1,6 +1,7 @@
 import { placesQuery } from "@/api/places";
 import PressButton from "@/components/press-button";
 import SearchBar from "@/components/search-bar";
+import Place from "@/db/models/place";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +15,9 @@ import PlaceCard from "./components/place-card";
 export default function PlacesScreen() {
   const { data: places, isLoading } = useQuery(placesQuery);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingPlace, setEditingPlace] = useState<Place | undefined>(
+    undefined
+  );
 
   const filteredPlaces = useMemo(() => {
     if (!places) return [];
@@ -44,7 +48,10 @@ export default function PlacesScreen() {
           headerRight: () => (
             <PressButton
               style={styles.actionButton}
-              onPress={async () => await TrueSheet.present("new-place-sheet")}
+              onPress={async () => {
+                setEditingPlace(undefined);
+                await TrueSheet.present("new-place-sheet");
+              }}
             >
               <Text style={styles.actionText}>Novo</Text>
             </PressButton>
@@ -54,7 +61,11 @@ export default function PlacesScreen() {
 
       <TrueSheet name="new-place-sheet" detents={["auto"]} dismissible>
         <NewPlaceForm
-          onSuccess={async () => TrueSheet.dismiss("new-place-sheet")}
+          place={editingPlace}
+          onSuccess={async () => {
+            setEditingPlace(undefined);
+            await TrueSheet.dismiss("new-place-sheet");
+          }}
         />
       </TrueSheet>
 
@@ -74,7 +85,15 @@ export default function PlacesScreen() {
         ) : (
           <FlashList
             data={filteredPlaces}
-            renderItem={({ item }) => <PlaceCard place={item} />}
+            renderItem={({ item }) => (
+              <PlaceCard
+                place={item}
+                onPress={async () => {
+                  setEditingPlace(item);
+                  await TrueSheet.present("new-place-sheet");
+                }}
+              />
+            )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
           />

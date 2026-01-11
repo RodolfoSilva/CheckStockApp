@@ -1,5 +1,6 @@
-import { useCreatePlace } from "@/api/places";
+import { useCreatePlace, useUpdatePlace } from "@/api/places";
 import Button from "@/components/button";
+import Place from "@/db/models/place";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
@@ -14,14 +15,18 @@ const placeSchema = z.object({
 type PlaceFormData = z.infer<typeof placeSchema>;
 
 type Props = {
+  place?: Place;
   onSuccess: () => void;
 };
 
 export default function NewPlaceForm(props: Props) {
-  const { onSuccess } = props;
+  const { place, onSuccess } = props;
   const { theme } = useUnistyles();
 
   const createPlaceMutation = useCreatePlace();
+  const updatePlaceMutation = useUpdatePlace();
+
+  const isEditing = !!place;
 
   const {
     control,
@@ -30,24 +35,36 @@ export default function NewPlaceForm(props: Props) {
   } = useForm<PlaceFormData>({
     resolver: zodResolver(placeSchema),
     defaultValues: {
-      name: "",
-      code: "",
+      name: place?.name || "",
+      code: place?.code || "",
     },
   });
 
   const onSubmit = async (data: PlaceFormData) => {
     try {
-      await createPlaceMutation.mutateAsync(data);
+      if (isEditing) {
+        await updatePlaceMutation.mutateAsync({
+          id: place.id,
+          ...data,
+        });
+      } else {
+        await createPlaceMutation.mutateAsync(data);
+      }
       onSuccess();
     } catch (error) {
-      console.error("Error creating place:", error);
+      console.error(
+        `Error ${isEditing ? "updating" : "creating"} place:`,
+        error
+      );
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Novo Local</Text>
+        <Text style={styles.title}>
+          {isEditing ? "Editar Local" : "Novo Local"}
+        </Text>
       </View>
 
       <View style={styles.form}>
@@ -100,7 +117,9 @@ export default function NewPlaceForm(props: Props) {
         <Button
           title="Salvar"
           onPress={handleSubmit(onSubmit)}
-          disabled={createPlaceMutation.isPending}
+          disabled={
+            createPlaceMutation.isPending || updatePlaceMutation.isPending
+          }
         />
       </View>
     </View>

@@ -57,3 +57,31 @@ export function useCreatePlace() {
     },
   });
 }
+
+type UpdatePlaceData = {
+  id: string;
+  name: string;
+  code: string;
+};
+
+export async function updatePlace(data: UpdatePlaceData) {
+  await database.write(async () => {
+    const place = await database.get<Place>("places").find(data.id);
+    await place.update((place) => {
+      place.name = data.name;
+      place.code = data.code;
+      place.updatedAt = new Date();
+    });
+  });
+}
+
+export function useUpdatePlace() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updatePlace,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["places"] });
+    },
+  });
+}

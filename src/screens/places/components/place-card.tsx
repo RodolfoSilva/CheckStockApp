@@ -1,15 +1,16 @@
 import Place from "@/db/models/place";
 import Feather from "@expo/vector-icons/Feather";
 import { useMemo } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
   place: Place;
+  onPress?: () => void;
 };
 
 export default function PlaceCard(props: Props) {
-  const { place } = props;
+  const { place, onPress } = props;
 
   // Generate a simple barcode-like number from the place code or ID
   const barcodeNumber = useMemo(() => {
@@ -23,7 +24,10 @@ export default function PlaceCard(props: Props) {
   }, [place.code, place.id]);
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={onPress}
+    >
       <View style={styles.iconContainer}>
         <Feather name="package" size={24} style={styles.icon} />
       </View>
@@ -42,7 +46,7 @@ export default function PlaceCard(props: Props) {
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -55,6 +59,9 @@ const styles = StyleSheet.create((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     gap: theme.spacing.md,
+  },
+  cardPressed: {
+    opacity: 0.7,
   },
   iconContainer: {
     width: 48,
