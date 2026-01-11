@@ -1,0 +1,37 @@
+---
+description: "Screen and component organization standards for React Native screens and Expo Router pages"
+globs:
+  - "src/app/**/*.tsx"
+  - "src/screens/**/*.tsx"
+alwaysApply: false
+---
+
+# Screen and Component Organization Rules
+
+## Screen Organization
+- All screen components must be placed in `src/screens/[module-name]/[name]-screen.tsx`
+  - Module folder names must use kebab-case (e.g., `conferences`, `assets`, `places`)
+  - Screen file names must use kebab-case and end with `-screen.tsx` (e.g., `conferences-screen.tsx`, `assets-screen.tsx`)
+  - Screen component names should use PascalCase (e.g., `ConferencesScreen`, `AssetsScreen`)
+
+## Component Organization
+- Screen-specific components must be placed in `src/screens/[module-name]/components/`
+  - The `components` folder name must be lowercase and plural
+  - Component file names must use kebab-case (e.g., `asset-card.tsx`, `place-card.tsx`, `search-bar.tsx`)
+  - Component names should use PascalCase (e.g., `AssetCard`, `PlaceCard`, `SearchBar`)
+
+## Expo Router Pages
+- Pages in `src/app/(tabs)/` and other route directories should be thin wrappers that import and render the corresponding screen from `src/screens/`
+- Route files should only handle navigation concerns and delegate rendering to screen components
+
+## Examples
+- Screen: `src/screens/conferences/conferences-screen.tsx` exports `ConferencesScreen`
+- Screen components: `src/screens/conferences/components/conference-card.tsx` exports `ConferenceCard`
+- Route: `src/app/(tabs)/conferences.tsx` imports and renders `ConferencesScreen`
+
+## Naming Conventions
+- **Folders**: Always use kebab-case (lowercase with hyphens)
+- **Screen files**: Always use kebab-case ending with `-screen.tsx`
+- **Component files**: Always use kebab-case
+- **Component/Class names**: Always use PascalCase
+- **Module folders**: Use kebab-case matching the feature domain (e.g., `conferences`, `assets`, `places`)
