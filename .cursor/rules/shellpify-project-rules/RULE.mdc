@@ -43,7 +43,6 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Prefer `router.replace()` for navigation that shouldn't be in history (like after scanning)
 
 ## React Native Best Practices
-- Always use `SafeAreaView` from `react-native-safe-area-context` for screens
 - Use `@shopify/flash-list` instead of `FlatList` for better performance
 - Use `expo-image` instead of `Image` from react-native for better performance
 - Always use `@lodev09/react-native-true-sheet` for form sheets (never use other modal/sheet libraries for forms)
