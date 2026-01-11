@@ -17,6 +17,7 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - **watermelondb**: Offline-first local database with reactive queries
 - **expo-sqlite**: SQLite adapter for watermelondb
 - **react-query** (TanStack Query): Server state management and data synchronization
+- **react-hook-form**: Form state management and validation (always use with zod for forms)
 - **zod**: Form validation and schema validation
 - **@shopify/flash-list**: High-performance list component (use instead of FlatList)
 - **@lodev09/react-native-true-sheet**: Form sheet component (always use for form sheets)
@@ -83,6 +84,15 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Use zod's `.parse()` for validation with error handling
 - Prefer `.safeParse()` when errors should be handled gracefully
 - Use zod schemas to type expo-router route parameters when possible
+
+## Forms
+- **Always use `react-hook-form` and `zod` together for all form implementations** - never use other form libraries or manual form state management
+- Use `@hookform/resolvers/zod` to integrate zod schemas with react-hook-form
+- Define zod schemas for form validation and use them with `useForm()` from react-hook-form
+- Use `Controller` or `register()` from react-hook-form to connect form inputs
+- Always handle form errors using `formState.errors` from react-hook-form
+- Use `handleSubmit()` from react-hook-form for form submission
+- Combine react-hook-form with `@lodev09/react-native-true-sheet` for form sheets
 
 ## Code Organization
 - Components go in `components/` directory
