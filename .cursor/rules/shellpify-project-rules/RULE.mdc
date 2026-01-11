@@ -1,0 +1,143 @@
+---
+description: "Shellpify project rules - React Native app with Expo 54, expo-router, vision camera, and tinybase"
+alwaysApply: true
+---
+
+# Shellpify Project Rules
+
+## Project Overview
+This is a React Native app built with Expo 54, using expo-router for file-based navigation, react-native-vision-camera for barcode/QR code scanning, and tinybase for offline-first local database storage.
+
+## Core Technologies
+- **Expo**: ~54.0.27
+- **React**: 19.1.0
+- **React Native**: 0.81.5
+- **expo-router**: ~6.0.17 (file-based routing)
+- **react-native-vision-camera**: ^4.7.3 (barcode/QR code scanning)
+- **tinybase**: Local offline-first database
+- **zod**: Form validation and schema validation
+- **@shopify/flash-list**: High-performance list component (use instead of FlatList)
+- **@lodev09/react-native-true-sheet**: Form sheet component (always use for form sheets)
+- **react-native-unistyles**: v3+ (styling solution - always use instead of StyleSheet or Tailwind, never use older versions)
+- **react-native-reanimated**: ~4.1.1 (required for expo-router animations)
+
+## TypeScript Rules
+- Always use TypeScript for all new files (.ts, .tsx)
+- Strict mode is enabled - fix type errors immediately, never use `any` unless absolutely necessary with documented justification
+- Use path aliases: `@/*` maps to project root
+- Prefer explicit types over inference when it improves readability
+- Use proper typing for expo-router navigation params with `useLocalSearchParams()` and typed routes
+
+## Expo Router Navigation
+- Use file-based routing with expo-router
+- Routes are defined in the `app/` directory
+- Use `Link` from `expo-router` for navigation
+- Use `useRouter()` hook for programmatic navigation
+- Use `useLocalSearchParams()` to access route parameters
+- Group routes using parentheses: `(tabs)`, `(app)` for route groups
+- Always import `react-native-reanimated` at the top of layout files that use animations
+- Use `Stack` from `expo-router` for stack navigation
+- Prefer `router.replace()` for navigation that shouldn't be in history (like after scanning)
+
+## React Native Best Practices
+- Always use `SafeAreaView` from `react-native-safe-area-context` for screens
+- Use `@shopify/flash-list` instead of `FlatList` for better performance
+- Use `expo-image` instead of `Image` from react-native for better performance
+- Always use `@lodev09/react-native-true-sheet` for form sheets (never use other modal/sheet libraries for forms)
+- Handle permissions properly using hooks from react-native-vision-camera
+- Always check for camera device availability before rendering Camera component
+- Use `expo-haptics` for user feedback when appropriate
+
+## React Native Vision Camera
+- Always check `hasPermission` from `useCameraPermission()` before rendering Camera
+- Always check device availability with `useCameraDevice()` before rendering Camera
+- Use `useCodeScanner()` hook for barcode/QR code scanning
+- Throttle code scanning to avoid duplicate reads (see `utils/throttle-code-scanner.ts`)
+- Support multiple code types: `["code-128", "upc-a", "ean-13", "qr"]`
+- Always handle `NoCameraDeviceError` and `PermissionsPage` states
+
+## Tinybase Database
+- Use tinybase for all local offline-first data storage
+- Store database initialization and schemas in `db/` directory
+- Create models in `db/models/` directory
+- Always handle offline scenarios - data should be available without network
+- Sync data when network is available, but app should work offline
+
+## Zod Validation
+- Use zod for all form validation and data schema validation
+- Define schemas close to where they're used, or in a shared `schemas/` directory
+- Use zod's `.parse()` for validation with error handling
+- Prefer `.safeParse()` when errors should be handled gracefully
+- Use zod schemas to type expo-router route parameters when possible
+
+## Code Organization
+- Components go in `components/` directory
+- Hooks go in `hooks/` directory
+- Utilities go in `utils/` directory
+- Database models go in `db/models/` directory
+- Use named exports for components and utilities
+- Use default exports for page components (expo-router requirement)
+
+## Styling
+- **Always use `react-native-unistyles` v3+ for all styling** - never use `StyleSheet` from react-native or Tailwind
+- **Important**: Use v3+ only - the API is different from older versions, never use v2 or earlier
+- Use unistyles' `StyleSheet.create()` or `useUnistyles()` hook for component styles (v3 API)
+- Configure unistyles theme in a dedicated theme file (typically `unistyles.ts` or `theme.ts`)
+- Support both light and dark themes using unistyles' built-in theme system
+- Use unistyles breakpoints and media queries for responsive design
+- Leverage unistyles' runtime theme switching capabilities
+- Refer to react-native-unistyles v3 documentation for correct API usage
+
+## Testing
+- Write tests for all utilities and hooks
+- Test files should be co-located: `*.test.ts` or `*.test.tsx`
+- Use Jest with ts-jest preset
+- Test environment is set to "node"
+- Use path alias `@/*` in tests via moduleNameMapper
+
+## Performance
+- Use `@shopify/flash-list` for all lists (replaces FlatList)
+- Throttle/debounce expensive operations (see throttle-code-scanner pattern)
+- Use React.memo() for expensive components when appropriate
+- Avoid unnecessary re-renders with proper dependency arrays in hooks
+- Use `useCallback` and `useMemo` when dependencies are stable
+
+## Error Handling
+- Always handle camera permission errors gracefully
+- Always handle missing camera device errors
+- Handle network errors for API calls (app should work offline with tinybase)
+- Use try-catch for async operations
+- Provide user-friendly error messages
+
+## Code Quality
+- Follow DRY (Don't Repeat Yourself) and KISS (Keep It Simple, Stupid) principles
+- Write self-documenting code with descriptive naming
+- Add comments when something is non-obvious or requires explanation
+- Remove unused code instead of leaving it "just in case"
+- Prioritize readability and developer experience
+- Eliminate technical debt - write production-ready code
+
+## Git & Commits
+- Keep commit messages short and concise (max 2 sentences)
+- Follow Conventional Commits format: https://www.conventionalcommits.org/
+- Examples: `feat: add barcode scanning`, `fix: handle camera permissions`, `refactor: extract scanner logic`
+
+## React 19 Specific
+- React 19.1.0 is used - leverage new features when appropriate
+- Be aware of React 19 changes in hooks and component behavior
+- Use proper typing for React 19 component props
+
+## New Architecture
+- Expo new architecture is enabled (`newArchEnabled: true` in app.json)
+- Be aware of new architecture implications for native modules
+- Ensure compatibility with react-native-vision-camera and other native modules
+
+## General Guidelines
+- Always respond in English
+- Explain technical decisions in plain English when needed
+- Deliver optimal, production-grade code with zero technical debt
+- If something looks confusing, add a comment explaining why
+- Never ignore or suppress TypeScript errors
+- Fix type errors immediately rather than working around them
+- Always write automated tests and validate they pass
+- Identify potential issues and suggest actionable fixes
