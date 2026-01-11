@@ -1,14 +1,11 @@
 import { database } from "@/db";
 import Place from "@/db/models/place";
 import { Q } from "@nozbe/watermelondb";
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { queryOptions, useMutation } from "@tanstack/react-query";
 
 export async function getPlaces() {
   const places = await database.get<Place>("places").query().fetch();
+  console.log("getPlaces", places);
   return places;
 }
 
@@ -48,12 +45,10 @@ export async function createPlace(data: CreatePlaceData) {
 }
 
 export function useCreatePlace() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: createPlace,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["places"] });
+    meta: {
+      invalidates: [placesQuery.queryKey],
     },
   });
 }
@@ -76,12 +71,10 @@ export async function updatePlace(data: UpdatePlaceData) {
 }
 
 export function useUpdatePlace() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: updatePlace,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["places"] });
+    meta: {
+      invalidates: [placesQuery.queryKey],
     },
   });
 }

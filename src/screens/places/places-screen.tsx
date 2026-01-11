@@ -6,30 +6,25 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import NewPlaceForm from "./components/new-place-form";
 import PlaceCard from "./components/place-card";
 
 export default function PlacesScreen() {
-  const { data: places, isLoading } = useQuery(placesQuery);
+  const { data: places = [], isLoading } = useQuery(placesQuery);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingPlace, setEditingPlace] = useState<Place | undefined>(
     undefined
   );
 
-  const filteredPlaces = useMemo(() => {
-    if (!places) return [];
-    if (!searchQuery.trim()) return places;
-
-    const query = searchQuery.toLowerCase().trim();
-    return places.filter(
-      (place) =>
-        place.name.toLowerCase().includes(query) ||
-        place.code.toLowerCase().includes(query)
-    );
-  }, [places, searchQuery]);
+  const query = searchQuery.toLowerCase().trim();
+  const filteredPlaces = places.filter(
+    (place) =>
+      place.name.toLowerCase().includes(query) ||
+      place.code.toLowerCase().includes(query)
+  );
 
   if (isLoading) {
     return (
