@@ -14,6 +14,7 @@ export const adapter = new SQLiteAdapter({
   jsi: Platform.OS === "ios",
   // (optional, but you should implement this method)
   onSetUpError: (error) => {
+    console.error(error);
     // Database failed to load -- offer the user to reload the app or log out
   },
 });
