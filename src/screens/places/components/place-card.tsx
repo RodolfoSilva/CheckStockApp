@@ -4,6 +4,48 @@ import { useMemo } from "react";
 import { Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
+type Props = {
+  place: Place;
+};
+
+export default function PlaceCard(props: Props) {
+  const { place } = props;
+
+  // Generate a simple barcode-like number from the place code or ID
+  const barcodeNumber = useMemo(() => {
+    // Use the code if available, otherwise generate from ID
+    const code = place.code || place.id;
+    // Convert to a 4-digit number-like string
+    const hash = code
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return String(hash % 10000).padStart(4, "0");
+  }, [place.code, place.id]);
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.iconContainer}>
+        <Feather name="package" size={24} style={styles.icon} />
+      </View>
+      <View style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{place.name}</Text>
+        <View style={styles.cardDetails}>
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>{place.code}</Text>
+          </View>
+          <View style={styles.dot} />
+          <View style={styles.barcodeContainer}>
+            {[...Array(3)].map((_, i) => (
+              <View key={i} style={styles.barcodeLine} />
+            ))}
+            <Text style={styles.barcodeNumber}>{barcodeNumber}</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create((theme) => ({
   card: {
     backgroundColor: theme.colors.card,
@@ -74,43 +116,3 @@ const styles = StyleSheet.create((theme) => ({
     marginLeft: theme.spacing.xs,
   },
 }));
-
-interface PlaceCardProps {
-  place: Place;
-}
-
-export function PlaceCard({ place }: PlaceCardProps) {
-  // Generate a simple barcode-like number from the place code or ID
-  const barcodeNumber = useMemo(() => {
-    // Use the code if available, otherwise generate from ID
-    const code = place.code || place.id;
-    // Convert to a 4-digit number-like string
-    const hash = code
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return String(hash % 10000).padStart(4, "0");
-  }, [place.code, place.id]);
-
-  return (
-    <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        <Feather name="package" size={24} style={styles.icon} />
-      </View>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{place.name}</Text>
-        <View style={styles.cardDetails}>
-          <View style={styles.pill}>
-            <Text style={styles.pillText}>{place.code}</Text>
-          </View>
-          <View style={styles.dot} />
-          <View style={styles.barcodeContainer}>
-            {[...Array(3)].map((_, i) => (
-              <View key={i} style={styles.barcodeLine} />
-            ))}
-            <Text style={styles.barcodeNumber}>{barcodeNumber}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-}

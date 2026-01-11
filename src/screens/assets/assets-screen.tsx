@@ -4,23 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { AssetCard } from "./components/asset-card";
-import { SearchBar } from "./components/search-bar";
-
-const styles = StyleSheet.create((theme) => ({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  listContent: {
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.lg,
-  },
-}));
+import { StyleSheet } from "react-native-unistyles";
+import SearchBar from "@/components/search-bar";
+import AssetCard from "./components/asset-card";
 
 export default function AssetsScreen() {
-  const { theme } = useUnistyles();
   const { data: assets, isLoading } = useQuery(assetsQuery);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -39,18 +27,8 @@ export default function AssetsScreen() {
   if (isLoading) {
     return (
       <SafeAreaView edges={["top"]} style={styles.container}>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: "600",
-              color: theme.colors.text,
-            }}
-          >
-            Loading...
-          </Text>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
         </View>
       </SafeAreaView>
     );
@@ -59,19 +37,13 @@ export default function AssetsScreen() {
   if (!assets || assets.length === 0) {
     return (
       <SafeAreaView edges={["top"]} style={styles.container}>
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: "600",
-              color: theme.colors.text,
-            }}
-          >
-            No assets found
-          </Text>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by name, SKU, or barcode..."
+        />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No assets found</Text>
         </View>
       </SafeAreaView>
     );
@@ -79,7 +51,11 @@ export default function AssetsScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
-      <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Search by name, SKU, or barcode..."
+      />
       <FlashList
         data={filteredAssets}
         renderItem={({ item }) => <AssetCard asset={item} />}
@@ -89,3 +65,34 @@ export default function AssetsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  listContent: {
+    paddingHorizontal: theme.spacing.md,
+    paddingBottom: theme.spacing.lg,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: theme.colors.text,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: theme.colors.text,
+  },
+}));

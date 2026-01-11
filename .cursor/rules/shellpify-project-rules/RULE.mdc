@@ -92,10 +92,15 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Database models go in `db/models/` directory
 - Use default exports for all components (including page components for expo-router)
 - Use named exports for utilities and hooks
+- **Component reusability**: If a component is used in more than one screen, it must be placed in `src/components/` directory
+- **Before implementing new components**: Always check if a component with the same characteristics already exists in the codebase to avoid duplication
 
 ## Component Conventions
 - **Always use default export for components** - never use named exports for components
 - **Always use function declarations** - never use arrow functions for components (e.g., `function MyComponent()` not `const MyComponent = ()`)
+- **Default export pattern**: Always use `export default` directly in the function declaration, never export separately
+  - ❌ Bad: `function MyComponent() { ... }` followed by `export default MyComponent;`
+  - ✅ Good: `export default function MyComponent() { ... }`
 - **Always use `type` instead of `interface`** - use `type` for all type definitions, including component props
 - **Component props type naming**: Always name component props type as `Props` (e.g., `type Props = { ... }`)
 - **Props destructuring**: Never destructure props directly in the function definition

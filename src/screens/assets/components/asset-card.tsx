@@ -4,6 +4,45 @@ import { useMemo } from "react";
 import { Text, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
+type Props = {
+  asset: Asset;
+};
+
+export default function AssetCard(props: Props) {
+  const { asset } = props;
+  const { theme } = useUnistyles();
+
+  // Generate a mock stock number based on asset ID for display
+  // In a real app, this would come from the database
+  const stockNumber = useMemo(() => {
+    const hash = asset.id.split("").reduce((acc, char) => {
+      return char.charCodeAt(0) + ((acc << 5) - acc);
+    }, 0);
+    return String((Math.abs(hash) % 9000) + 1000).padStart(4, "0");
+  }, [asset.id]);
+
+  return (
+    <View style={styles.assetCard}>
+      <View style={styles.assetIconContainer}>
+        <Feather name="box" size={24} color={theme.colors.iconForeground} />
+      </View>
+      <View style={styles.assetContent}>
+        <Text style={styles.assetName}>{asset.name}</Text>
+        <View style={styles.assetDetails}>
+          <View style={styles.assetTag}>
+            <Text style={styles.assetTagText}>{asset.code}</Text>
+          </View>
+          <View style={styles.assetSeparator} />
+          <View style={styles.assetStock}>
+            <Feather name="bar-chart-2" size={12} color={theme.colors.icon} />
+            <Text style={styles.assetStockText}>{stockNumber}</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create((theme) => ({
   assetCard: {
     flexDirection: "row",
@@ -64,40 +103,3 @@ const styles = StyleSheet.create((theme) => ({
     fontWeight: "500",
   },
 }));
-
-interface AssetCardProps {
-  asset: Asset;
-}
-
-export function AssetCard({ asset }: AssetCardProps) {
-  const { theme } = useUnistyles();
-  // Generate a mock stock number based on asset ID for display
-  // In a real app, this would come from the database
-  const stockNumber = useMemo(() => {
-    const hash = asset.id.split("").reduce((acc, char) => {
-      return char.charCodeAt(0) + ((acc << 5) - acc);
-    }, 0);
-    return String((Math.abs(hash) % 9000) + 1000).padStart(4, "0");
-  }, [asset.id]);
-
-  return (
-    <View style={styles.assetCard}>
-      <View style={styles.assetIconContainer}>
-        <Feather name="box" size={24} color={theme.colors.iconForeground} />
-      </View>
-      <View style={styles.assetContent}>
-        <Text style={styles.assetName}>{asset.name}</Text>
-        <View style={styles.assetDetails}>
-          <View style={styles.assetTag}>
-            <Text style={styles.assetTagText}>{asset.code}</Text>
-          </View>
-          <View style={styles.assetSeparator} />
-          <View style={styles.assetStock}>
-            <Feather name="bar-chart-2" size={12} color={theme.colors.icon} />
-            <Text style={styles.assetStockText}>{stockNumber}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-}
