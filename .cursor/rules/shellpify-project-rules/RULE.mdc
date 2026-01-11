@@ -1,12 +1,12 @@
 ---
-description: "Shellpify project rules - React Native app with Expo 54, expo-router, vision camera, and tinybase"
+description: "Shellpify project rules - React Native app with Expo 54, expo-router, vision camera, watermelondb, expo-sqlite, and react-query"
 alwaysApply: true
 ---
 
 # Shellpify Project Rules
 
 ## Project Overview
-This is a React Native app built with Expo 54, using expo-router for file-based navigation, react-native-vision-camera for barcode/QR code scanning, and tinybase for offline-first local database storage.
+This is a React Native app built with Expo 54, using expo-router for file-based navigation, react-native-vision-camera for barcode/QR code scanning, watermelondb with expo-sqlite for offline-first local database storage, and react-query for server state management and data synchronization.
 
 ## Core Technologies
 - **Expo**: ~54.0.27
@@ -14,7 +14,9 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - **React Native**: 0.81.5
 - **expo-router**: ~6.0.17 (file-based routing)
 - **react-native-vision-camera**: ^4.7.3 (barcode/QR code scanning)
-- **tinybase**: Local offline-first database
+- **watermelondb**: Offline-first local database with reactive queries
+- **expo-sqlite**: SQLite adapter for watermelondb
+- **react-query** (TanStack Query): Server state management and data synchronization
 - **zod**: Form validation and schema validation
 - **@shopify/flash-list**: High-performance list component (use instead of FlatList)
 - **@lodev09/react-native-true-sheet**: Form sheet component (always use for form sheets)
@@ -56,12 +58,24 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Support multiple code types: `["code-128", "upc-a", "ean-13", "qr"]`
 - Always handle `NoCameraDeviceError` and `PermissionsPage` states
 
-## Tinybase Database
-- Use tinybase for all local offline-first data storage
+## WatermelonDB Database
+- Use watermelondb for all local offline-first data storage
+- Use expo-sqlite as the SQLite adapter for watermelondb
 - Store database initialization and schemas in `db/` directory
-- Create models in `db/models/` directory
+- Create models in `db/models/` directory using watermelondb's model syntax
+- Use watermelondb's reactive queries with `@watermelondb/react` for real-time updates
 - Always handle offline scenarios - data should be available without network
-- Sync data when network is available, but app should work offline
+- Use watermelondb's sync capabilities for data synchronization
+
+## React Query (TanStack Query)
+- Use react-query for server state management and data synchronization
+- Configure QueryClient at the app root level
+- Use `useQuery` for fetching server data
+- Use `useMutation` for creating, updating, and deleting server data
+- Implement optimistic updates when appropriate
+- Configure proper cache and stale time settings
+- Use react-query's offline support features
+- Combine react-query with watermelondb: use react-query for server sync, watermelondb for local storage
 
 ## Zod Validation
 - Use zod for all form validation and data schema validation
@@ -105,7 +119,7 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 ## Error Handling
 - Always handle camera permission errors gracefully
 - Always handle missing camera device errors
-- Handle network errors for API calls (app should work offline with tinybase)
+- Handle network errors for API calls (app should work offline with watermelondb)
 - Use try-catch for async operations
 - Provide user-friendly error messages
 
