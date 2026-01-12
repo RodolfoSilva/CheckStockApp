@@ -7,7 +7,7 @@ import useBeep from "@/hooks/use-beep";
 import { throttleCodeScanner } from "@/utils/throttle-code-scanner";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { StyleSheet as RNStyleSheet, Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
   Camera,
@@ -19,12 +19,13 @@ import {
 type Props = {
   conferenceId: string;
   asset: Asset;
+  cameraHeight?: number;
 };
 
 const individualScanner = throttleCodeScanner(3, 3000);
 
 export default function IndividualPickingView(props: Props) {
-  const { conferenceId, asset } = props;
+  const { conferenceId, asset, cameraHeight } = props;
   const device = useCameraDevice("back");
   const { hasPermission } = useCameraPermission();
   const createPickingMutation = useCreatePicking();
@@ -86,10 +87,16 @@ export default function IndividualPickingView(props: Props) {
   if (device == null) return <NoCameraDeviceError />;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraContainer}>
+    <View style={cameraHeight ? undefined : styles.container}>
+      <View
+        style={[
+          cameraHeight
+            ? { height: cameraHeight }
+            : styles.cameraContainer,
+        ]}
+      >
         <Camera
-          style={styles.camera}
+          style={cameraHeight ? RNStyleSheet.absoluteFill : styles.camera}
           device={device}
           codeScanner={codeScanner}
           isActive={true}

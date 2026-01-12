@@ -6,7 +6,13 @@ import Button from "@/components/button";
 import useBeep from "@/hooks/use-beep";
 import { throttleCodeScanner } from "@/utils/throttle-code-scanner";
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet as RNStyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import {
   Camera,
@@ -19,12 +25,13 @@ import Feather from "@expo/vector-icons/Feather";
 type Props = {
   conferenceId: string;
   asset: Asset;
+  cameraHeight?: number;
 };
 
 const quantityScanner = throttleCodeScanner(3, 3000);
 
 export default function QuantityPickingView(props: Props) {
-  const { conferenceId, asset } = props;
+  const { conferenceId, asset, cameraHeight } = props;
   const { theme } = useUnistyles();
   const device = useCameraDevice("back");
   const { hasPermission } = useCameraPermission();
@@ -86,10 +93,16 @@ export default function QuantityPickingView(props: Props) {
   if (device == null) return <NoCameraDeviceError />;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraContainer}>
+    <View style={cameraHeight ? undefined : styles.container}>
+      <View
+        style={[
+          cameraHeight
+            ? { height: cameraHeight }
+            : styles.cameraContainer,
+        ]}
+      >
         <Camera
-          style={styles.camera}
+          style={cameraHeight ? RNStyleSheet.absoluteFill : styles.camera}
           device={device}
           codeScanner={codeScanner}
           isActive={true}
