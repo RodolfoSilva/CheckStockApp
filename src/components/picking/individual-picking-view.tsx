@@ -90,9 +90,7 @@ export default function IndividualPickingView(props: Props) {
     <View style={cameraHeight ? undefined : styles.container}>
       <View
         style={[
-          cameraHeight
-            ? { height: cameraHeight }
-            : styles.cameraContainer,
+          cameraHeight ? { height: cameraHeight } : styles.cameraContainer,
         ]}
       >
         <Camera
@@ -103,9 +101,7 @@ export default function IndividualPickingView(props: Props) {
         />
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>
-          Escaneie os itens individualmente
-        </Text>
+        <Text style={styles.infoText}>Escaneie os itens individualmente</Text>
         <Text style={styles.countText}>
           Itens escaneados: {scannedItems.length}
         </Text>
@@ -120,8 +116,6 @@ export default function IndividualPickingView(props: Props) {
                 <Text style={styles.listItemText}>{item}</Text>
               </View>
             )}
-            keyExtractor={(item, index) => `${item}-${index}`}
-            estimatedItemSize={40}
             nestedScrollEnabled={true}
             scrollEnabled={false}
           />
@@ -181,4 +175,3 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.text,
   },
 }));
-

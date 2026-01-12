@@ -56,7 +56,6 @@ export default function HomeScreen() {
             onPress={() => router.push(`/(app)/conferences/${item.id}/picking`)}
           />
         )}
-        keyExtractor={(item) => item.id}
         ListHeaderComponent={<DashboardHeader />}
         ListEmptyComponent={<EmptyInProgressConferences />}
         contentContainerStyle={styles.listContent}

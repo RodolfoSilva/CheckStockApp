@@ -1,6 +1,6 @@
+import Feather from "@expo/vector-icons/Feather";
 import { Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import Feather from "@expo/vector-icons/Feather";
 
 type PickingMode = "individual" | "quantity";
 
@@ -24,7 +24,7 @@ export default function PickingModeSelector(props: Props) {
           onPress={() => onSelectMode("individual")}
         >
           <Feather
-            name="scan"
+            name="code"
             size={24}
             color={
               selectedMode === "individual"
@@ -125,4 +125,3 @@ const styles = StyleSheet.create((theme) => ({
     textAlign: "center",
   },
 }));
-

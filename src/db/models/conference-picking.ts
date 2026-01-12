@@ -18,3 +18,4 @@ export default class ConferencePicking extends Model {
   @date("updated_at") updatedAt!: Date;
 }
 
+

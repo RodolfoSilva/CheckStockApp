@@ -51,6 +51,16 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Always check for camera device availability before rendering Camera component
 - Use `expo-haptics` for user feedback when appropriate
 
+## FlashList (@shopify/flash-list)
+- **Never use `estimatedItemSize`** - this prop does not exist in the version we use (2.0.2) and should not be used
+  - ❌ Bad: `<FlashList estimatedItemSize={100} ... />`
+  - ✅ Good: `<FlashList ... />` (without estimatedItemSize)
+- **Avoid using `keyExtractor`** - FlashList handles keys automatically in most cases, and `keyExtractor` doesn't significantly improve performance for our use cases
+  - Only use `keyExtractor` in specific cases where it's absolutely necessary (e.g., when items don't have a unique `id` field)
+  - In most cases, FlashList will automatically use the `id` field from items, or you can ensure items have a unique identifier
+  - ❌ Bad: `<FlashList keyExtractor={(item) => item.id} ... />` (when item.id already exists)
+  - ✅ Good: `<FlashList data={items} renderItem={...} />` (let FlashList handle keys automatically)
+
 ## React Native Vision Camera
 - Always check `hasPermission` from `useCameraPermission()` before rendering Camera
 - Always check device availability with `useCameraDevice()` before rendering Camera
@@ -152,7 +162,7 @@ This is a React Native app built with Expo 54, using expo-router for file-based 
 - Use path alias `@/*` in tests via moduleNameMapper
 
 ## Performance
-- Use `@shopify/flash-list` for all lists (replaces FlatList)
+- Use `@shopify/flash-list` for all lists (replaces FlatList) - see FlashList section for specific rules
 - Throttle/debounce expensive operations (see throttle-code-scanner pattern)
 - Use React.memo() for expensive components when appropriate
 - Avoid unnecessary re-renders with proper dependency arrays in hooks

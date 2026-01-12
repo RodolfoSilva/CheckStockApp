@@ -79,7 +79,6 @@ export default function ItemScreen() {
         style={styles.list}
         data={codes}
         renderItem={({ item }) => <Text>ITEM: {item}</Text>}
-        keyExtractor={(item, index) => `${item}-${index}`}
       />
     </SafeAreaView>
   );

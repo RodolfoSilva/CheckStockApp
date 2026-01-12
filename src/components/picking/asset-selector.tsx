@@ -1,10 +1,10 @@
 import { assetsQuery } from "@/api/assets";
 import Asset from "@/db/models/asset";
+import Feather from "@expo/vector-icons/Feather";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import Feather from "@expo/vector-icons/Feather";
 
 type Props = {
   selectedAssetId?: string;
@@ -69,8 +69,6 @@ export default function AssetSelector(props: Props) {
             )}
           </TouchableOpacity>
         )}
-        keyExtractor={(item) => item.id}
-        estimatedItemSize={60}
       />
     </View>
   );
@@ -142,4 +140,3 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.iconForeground,
   },
 }));
-

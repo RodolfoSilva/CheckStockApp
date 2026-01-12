@@ -41,7 +41,6 @@ export default function PickedItemsList(props: Props) {
       <FlashList
         data={pickings}
         renderItem={({ item }) => <PickingItem picking={item} />}
-        keyExtractor={(item) => item.id}
         nestedScrollEnabled={true}
         scrollEnabled={false}
       />

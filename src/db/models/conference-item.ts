@@ -10,3 +10,4 @@ export default class ConferenceItem extends Model {
   @date("created_at") createdAt!: Date;
   @date("updated_at") updatedAt!: Date;
 }
+

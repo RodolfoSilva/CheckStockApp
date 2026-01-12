@@ -90,7 +90,6 @@ export default function PlacesScreen() {
                 }}
               />
             )}
-            keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
           />
         )}

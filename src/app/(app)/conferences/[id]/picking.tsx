@@ -70,7 +70,6 @@ export default function PickingScreen() {
           </View>
         }
         renderItem={({ item }) => <PickingItem picking={item} />}
-        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
     </>

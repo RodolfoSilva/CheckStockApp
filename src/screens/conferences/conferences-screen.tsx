@@ -86,7 +86,6 @@ export default function ConferencesScreen() {
               }
             />
           )}
-          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
         />
       </View>

@@ -90,7 +90,6 @@ export default function AssetsScreen() {
                 }}
               />
             )}
-            keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
           />
         )}

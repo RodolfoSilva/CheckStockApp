@@ -155,8 +155,6 @@ export default function NewConferenceScreen() {
                               )}
                             </TouchableOpacity>
                           )}
-                          keyExtractor={(place) => place.id}
-                          estimatedItemSize={50}
                           nestedScrollEnabled
                         />
                       )}
