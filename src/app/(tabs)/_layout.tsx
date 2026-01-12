@@ -9,6 +9,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          headerShown: false,
           tabBarIcon: ({ focused, ...rest }) => (
             <Feather name="home" {...rest} />
           ),
