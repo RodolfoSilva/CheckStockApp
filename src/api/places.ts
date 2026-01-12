@@ -9,11 +9,11 @@ export async function getPlaces() {
 }
 
 export async function getPlace(id: string) {
-  const place = await database
+  const places = await database
     .get<Place>("places")
     .query(Q.where("id", id))
     .fetch();
-  return place;
+  return places[0] || null;
 }
 
 export const placesQuery = queryOptions({

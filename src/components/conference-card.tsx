@@ -9,6 +9,7 @@ type ConferenceCardProps = {
   conference: Conference;
   status?: ConferenceStatus;
   itemsCount?: number;
+  onPress?: () => void;
 };
 
 // Helper to determine status from conference data
@@ -147,6 +148,7 @@ export function ConferenceCard({
   conference,
   status,
   itemsCount,
+  onPress,
 }: ConferenceCardProps) {
   const { theme } = useUnistyles();
   const resolvedStatus = status || getStatus(conference);
@@ -188,7 +190,7 @@ export function ConferenceCard({
   const placeName = conference.place?.name || "Unknown";
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle}>{conference.name}</Text>
         <View style={styles.statusContainer}>
@@ -234,6 +236,6 @@ export function ConferenceCard({
           <Text style={styles.itemsUnits}>units</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

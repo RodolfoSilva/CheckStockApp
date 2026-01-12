@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/themed-text";
 import Conference from "@/db/models/conference";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
@@ -27,6 +28,7 @@ function getStatus(conference: Conference): ConferenceStatus {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { data: conferences = [], isLoading } = useQuery(conferencesQuery);
 
   // Filter only in-progress conferences
@@ -48,7 +50,12 @@ export default function HomeScreen() {
     <SafeAreaView edges={["top"]} style={styles.container}>
       <FlashList
         data={inProgressConferences}
-        renderItem={({ item }) => <ConferenceCard conference={item} />}
+        renderItem={({ item }) => (
+          <ConferenceCard
+            conference={item}
+            onPress={() => router.push(`/(app)/conferences/${item.id}/picking`)}
+          />
+        )}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={<DashboardHeader />}
         ListEmptyComponent={<EmptyInProgressConferences />}
